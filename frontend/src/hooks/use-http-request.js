@@ -13,12 +13,16 @@ export const useHttpRequest = () => {
     try {
       const options = {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
       };
+
       if (body) {
-        options.body = JSON.stringify(body);
+        if (body instanceof FormData) {
+          options.body = body;
+        } else {
+          options.headers['Content-Type'] = 'application/json';
+          options.body = JSON.stringify(body);
+        }
       }
 
       const response = await fetch(url, options);

@@ -1,5 +1,4 @@
 'use client';
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,21 +7,22 @@ import * as f from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import * as c from '@/components/ui/card';
-import { useApi } from '';
+import { useHttpRequest } from '../../../hooks/use-http-request';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Product name must be at least 2 characters.' }),
   description: z.string().min(10, { message: 'Description must be at least 10 characters.' }),
   price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
-  thumbnail: z.any(),
-  photoModel1: z.any(),
-  photoModel2: z.any(),
 });
 
 export default function UploadProductPage() {
-  const { request, loading, error } = useApi();
+  const { request, loading, error } = useHttpRequest();
   const router = useRouter();
+  const [thumbnail, setThumbnail] = useState(null);
+  const [photoModel1, setPhotoModel1] = useState(null);
+  const [photoModel2, setPhotoModel2] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -30,9 +30,6 @@ export default function UploadProductPage() {
       name: '',
       description: '',
       price: '',
-      thumbnail: null,
-      photoModel1: null,
-      photoModel2: null,
     },
   });
 
@@ -41,21 +38,21 @@ export default function UploadProductPage() {
     formData.append('name', values.name);
     formData.append('description', values.description);
     formData.append('price', values.price);
-    if (values.thumbnail[0]) {
-      formData.append('thumbnail', values.thumbnail[0]);
+    if (thumbnail) {
+      formData.append('thumbnail', thumbnail);
     }
-    if (values.photoModel1[0]) {
-      formData.append('photoModel1', values.photoModel1[0]);
+    if (photoModel1) {
+      formData.append('photoModel1', photoModel1);
     }
-    if (values.photoModel2[0]) {
-      formData.append('photoModel2', values.photoModel2[0]);
+    if (photoModel2) {
+      formData.append('photoModel2', photoModel2);
     }
 
     try {
       await request('/api/products', 'POST', formData);
       router.push('/'); // Redirect to home on success
     } catch (err) {
-      // Error is already handled by the useApi hook
+      // Error is already handled by the useHttpRequest hook
     }
   }
 
@@ -108,45 +105,24 @@ export default function UploadProductPage() {
                   </f.FormItem>
                 )}
               />
-              <f.FormField
-                control={form.control}
-                name="thumbnail"
-                render={({ field }) => (
-                  <f.FormItem>
-                    <f.FormLabel>Thumbnail Image</f.FormLabel>
-                    <f.FormControl>
-                      <Input type="file" {...form.register('thumbnail')} />
-                    </f.FormControl>
-                    <f.FormMessage />
-                  </f.FormItem>
-                )}
-              />
-              <f.FormField
-                control={form.control}
-                name="photoModel1"
-                render={({ field }) => (
-                  <f.FormItem>
-                    <f.FormLabel>Model Photo 1</f.FormLabel>
-                    <f.FormControl>
-                      <Input type="file" {...form.register('photoModel1')} />
-                    </f.FormControl>
-                    <f.FormMessage />
-                  </f.FormItem>
-                )}
-              />
-              <f.FormField
-                control={form.control}
-                name="photoModel2"
-                render={({ field }) => (
-                  <f.FormItem>
-                    <f.FormLabel>Model Photo 2</f.FormLabel>
-                    <f.FormControl>
-                      <Input type="file" {...form.register('photoModel2')} />
-                    </f.FormControl>
-                    <f.FormMessage />
-                  </f.FormItem>
-                )}
-              />
+              <f.FormItem>
+                <f.FormLabel>Thumbnail Image</f.FormLabel>
+                <f.FormControl>
+                  <Input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
+                </f.FormControl>
+              </f.FormItem>
+              <f.FormItem>
+                <f.FormLabel>Model Photo 1</f.FormLabel>
+                <f.FormControl>
+                  <Input type="file" onChange={(e) => setPhotoModel1(e.target.files[0])} />
+                </f.FormControl>
+              </f.FormItem>
+              <f.FormItem>
+                <f.FormLabel>Model Photo 2</f.FormLabel>
+                <f.FormControl>
+                  <Input type="file" onChange={(e) => setPhotoModel2(e.target.files[0])} />
+                </f.FormControl>
+              </f.FormItem>
               {error && <p className="text-sm font-medium text-destructive">{error}</p>}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Uploading Product...' : 'Upload Product'}
