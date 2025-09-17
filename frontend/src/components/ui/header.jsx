@@ -31,8 +31,6 @@ export function Header() {
         <div className="flex items-center space-x-8">
           <Link href="/" className="text-2xl font-bold text-primary">ShopHub</Link>
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-            <Link href="/shop" className="text-foreground hover:text-primary transition-colors">Shop</Link>
             <Link href="/about" className="text-foreground hover:text-primary transition-colors">About</Link>
             <Link href="/contact" className="text-foreground hover:text-primary transition-colors">Contact</Link>
           </nav>
