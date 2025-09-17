@@ -110,7 +110,7 @@ export default function CategoriesPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">Shop by Category</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover our wide range of products organized by category. Find exactly what you're looking for.
+            Discover our wide range of products organized by category. Find exactly what you&apos;re looking for.
           </p>
         </div>
 
@@ -157,7 +157,7 @@ export default function CategoriesPage() {
         <div className="mt-16 text-center">
           <div className="bg-card rounded-lg p-8 border">
             <Grid3X3 className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-4">Can't find what you're looking for?</h2>
+            <h2 className="text-2xl font-semibold mb-4">Can&apos;t find what you&apos;re looking for?</h2>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               Use our advanced search or contact our support team for personalized assistance.
             </p>
