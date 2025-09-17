@@ -32,8 +32,13 @@ export const useApi = () => {
       };
 
       if (body) {
-        options.headers['Content-Type'] = 'application/json';
-        options.body = JSON.stringify(body);
+        if (body instanceof FormData) {
+          // Let the browser set the Content-Type for FormData
+          options.body = body;
+        } else {
+          options.headers['Content-Type'] = 'application/json';
+          options.body = JSON.stringify(body);
+        }
       }
 
       const response = await fetch(url, options);

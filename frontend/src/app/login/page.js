@@ -10,6 +10,8 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useApi } from '@/hooks/use-api';
+
 const formSchema = z.object({
   email: z.email({
     message: 'Please enter a valid email.',
@@ -21,7 +23,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter();
-  const [error, setError] = useState(null);
+  const { loading, setLoading, error, setError } = useApi();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -32,7 +34,7 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values) {
-    setError(null);
+    setLoading(true);
     try {
       const result = await signIn('credentials', {
         redirect: false,
@@ -44,9 +46,11 @@ export default function LoginPage() {
         throw new Error(result.error || 'Something went wrong');
       }
 
-      router.push('/'); // Redirect to home page on successful login
+      router.push('/');
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -86,7 +90,9 @@ export default function LoginPage() {
                 )}
               />
               {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-              <Button type="submit" className="w-full">Sign In</Button>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Signing In...' : 'Sign In'}
+              </Button>
             </form>
           </f.Form>
           <div className="mt-4 text-center text-sm">
@@ -100,4 +106,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

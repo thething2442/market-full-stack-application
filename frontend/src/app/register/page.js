@@ -7,8 +7,9 @@ import * as f from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import * as c from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { useApi } from '@/hooks/use-api';
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.',
@@ -26,7 +27,7 @@ const formSchema = z.object({
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [error, setError] = useState(null);
+  const { request, loading, error, setData } = useApi();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -38,41 +39,24 @@ export default function RegisterPage() {
   });
 
   async function onSubmit(values) {
-    setError(null);
     try {
-      // Step 1: Create the user
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      await request('/api/register', 'POST', values);
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Something went wrong');
-      }
-
-      // Step 2: Sign the user in
       const signInResponse = await signIn('credentials', {
         email: values.email,
         password: values.password,
-        redirect: false, // Do not redirect, we'll handle it manually
+        redirect: false,
       });
 
       if (signInResponse.error) {
-        // If sign-in fails, show an error. This is unlikely but good practice.
-        setError(signInResponse.error);
-        return;
+        throw new Error(signInResponse.error);
       }
       
-      // Step 3: Redirect to the home page and refresh to update the header
       router.push('/');
       router.refresh();
 
     } catch (error) {
-      setError(error.message);
+      setData(null); // Clear data on error
     }
   }
 
@@ -125,7 +109,9 @@ export default function RegisterPage() {
                 )}
               />
               {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-              <Button type="submit" className="w-full">Create Account</Button>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating Account...' : 'Create Account'}
+              </Button>
             </form>
           </f.Form>
         </c.CardContent>
