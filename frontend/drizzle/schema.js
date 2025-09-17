@@ -53,8 +53,9 @@ export const products = sqliteTable("products", {
 export const users = sqliteTable("users", {
 	id: text().primaryKey().notNull(),
 	name: text(),
-	email: text().notNull(),
+	email: text().unique().notNull(),
 	emailVerified: integer(),
 	image: text(),
+	hashedPassword: text(),
 });
 

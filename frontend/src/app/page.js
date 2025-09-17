@@ -14,7 +14,7 @@ export default function HomePage() {
         <HeroSection />
         <ProductCarousel />
         <FeaturedCategories />
-        <Testimonials />
+
       </main>
       <Footer />
     </div>

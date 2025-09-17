@@ -8,6 +8,13 @@
       "when": 1757990105594,
       "tag": "0000_stiff_ikaris",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1758010956370,
+      "tag": "0001_loving_iron_monger",
+      "breakpoints": true
     }
   ]
 }
