@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import * as c from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { useApi } from '@/hooks/use-api';
+import { useHttpRequest } from '@/hooks/use-http-request'; // Changed import
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -27,7 +27,7 @@ const formSchema = z.object({
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { request, loading, error, setData } = useApi();
+  const { request, loading, error, setError } = useHttpRequest(); // Changed hook usage
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -55,8 +55,8 @@ export default function RegisterPage() {
       router.push('/');
       router.refresh();
 
-    } catch (error) {
-      setData(null); // Clear data on error
+    } catch (err) {
+      setError(err.message || 'An unexpected error occurred during sign-in.');
     }
   }
 

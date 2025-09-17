@@ -8,7 +8,7 @@ import * as f from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import * as c from '@/components/ui/card';
-import { useApi } from '@/hooks/use-api';
+import { useApi } from '';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({

@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import * as c from '@/components/ui/card';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import Link from 'next/link';
 import { useApi } from '@/hooks/use-api';
 
@@ -23,7 +22,19 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loading, setLoading, error, setError } = useApi();
+
+  const loginApi = useApi(async (values) => {
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: values.email,
+      password: values.password,
+    });
+
+    if (result.error) {
+      throw new Error(result.error || 'Something went wrong');
+    }
+    router.push('/');
+  });
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -34,23 +45,11 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values) {
-    setLoading(true);
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: values.email,
-        password: values.password,
-      });
-
-      if (result.error) {
-        throw new Error(result.error || 'Something went wrong');
-      }
-
-      router.push('/');
+      await loginApi.execute(values);
     } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      // Error is already set by useApi hook, no need to set it again here
+      // You can add additional error handling specific to the form if needed
     }
   }
 
@@ -89,9 +88,9 @@ export default function LoginPage() {
                   </f.FormItem>
                 )}
               />
-              {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Signing In...' : 'Sign In'}
+              {loginApi.error && <p className="text-sm font-medium text-destructive">{loginApi.error}</p>}
+              <Button type="submit" className="w-full" disabled={loginApi.loading}>
+                {loginApi.loading ? 'Signing In...' : 'Sign In'}
               </Button>
             </form>
           </f.Form>
